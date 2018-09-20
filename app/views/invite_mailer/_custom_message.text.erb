@@ -1,0 +1,5 @@
+<% if @message.present? %>
+	<%= t('invitation.invite_mailer.custom_message', email: @invite.sender.email) %>
+
+	<%= @message %>
+<% end %>

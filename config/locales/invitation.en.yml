@@ -12,6 +12,7 @@ en:
         one: "Unable to issue invitation to %{email}"
         other: "Unable to issue invitations to %{email}"
     invite_mailer:
+      custom_message: '%{email} says:'
       existing_user:
         subject: "Invitation instructions"
         hello: "Hello %{email}"

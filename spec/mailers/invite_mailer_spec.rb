@@ -30,15 +30,35 @@ describe InviteMailer do
     end
   end
 
+  shared_examples_for 'email subject' do |extra_text = ''|
+    it "renders the subject #{extra_text}" do
+      expect(mail.subject).to eq expected_subject
+    end
+  end
+
+  shared_examples_for 'email body' do |extra_text = ''|
+    it "renders the email body #{extra_text}" do
+      expect(mail.body.encoded).to match(expected_message)
+    end
+  end
+
   describe '#existing_user_invite' do
     let(:invite) { create(:invite, :recipient_is_existing_user) }
     let(:mail)   { InviteMailer.existing_user(invite) }
+    let(:expected_subject) { 'Invitation instructions' }
 
     it_behaves_like 'multipart email'
     it_behaves_like 'multipart email with bodies'
 
-    it 'renders the subject' do
-      expect(mail.subject).to eq 'Invitation instructions'
+    context 'when no custom subject is provided' do
+      include_examples 'email subject'
+    end
+
+    context 'when custom subject is provided' do
+      let(:mail)             { InviteMailer.new_user(invite, subject: expected_subject) }
+      let(:expected_subject) { 'I can write custom subject' }
+
+      include_examples 'email subject', 'custom'
     end
 
     it 'renders the recipient email' do
@@ -56,14 +76,35 @@ describe InviteMailer do
         'http://example.org/user_reg_link'
       end)
     end
-    let(:invite) { create(:invite, :recipient_is_new_user) }
-    let(:mail)   { InviteMailer.new_user(invite) }
+    let(:invite)           { create(:invite, :recipient_is_new_user) }
+    let(:mail)             { InviteMailer.new_user(invite) }
+    let(:expected_subject) { 'Invitation instructions' }
 
     it_behaves_like 'multipart email'
     it_behaves_like 'multipart email with bodies'
 
-    it 'renders the subject' do
-      expect(mail.subject).to eq 'Invitation instructions'
+    context 'when no custom subject is provided' do
+      include_examples 'email subject'
+    end
+
+    context 'when custom subject is provided' do
+      let(:mail)             { InviteMailer.new_user(invite, subject: expected_subject) }
+      let(:expected_subject) { 'I can write custom subject' }
+
+      include_examples 'email subject', 'custom'
+    end
+
+    context 'when custom message is provided' do
+      let(:mail) do
+        InviteMailer.new_user(invite,
+                              subject: expected_subject,
+                              message: expected_message)
+      end
+      let(:expected_message) { 'I can write custom message' }
+
+      it 'adds custom message to email body' do
+        expect(mail.body.encoded).to match(expected_message)
+      end
     end
 
     it 'renders the recipient email' do
