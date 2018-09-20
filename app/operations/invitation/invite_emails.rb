@@ -4,8 +4,8 @@ module Invitation
 
     def initialize(invites, opts = {})
       @invites = invites
-      @opts    = opts
-      @mailer  = @opts[:mailer] || InviteMailer
+      @mailer  = opts[:mailer] || InviteMailer
+      @opts    = opts.slice(:subject, :message, :cc)
     end
 
     def send_invites

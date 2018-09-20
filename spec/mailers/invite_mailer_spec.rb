@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 describe InviteMailer do
@@ -35,6 +33,12 @@ describe InviteMailer do
   shared_examples_for 'email subject' do |extra_text = ''|
     it "renders the subject #{extra_text}" do
       expect(mail.subject).to eq expected_subject
+    end
+  end
+
+  shared_examples_for 'email body' do |extra_text = ''|
+    it "renders the email body #{extra_text}" do
+      expect(mail.body.encoded).to match(expected_message)
     end
   end
 
@@ -88,6 +92,19 @@ describe InviteMailer do
       let(:expected_subject) { 'I can write custom subject' }
 
       include_examples 'email subject', 'custom'
+    end
+
+    context 'when custom message is provided' do
+      let(:mail) do
+        InviteMailer.new_user(invite,
+                              subject: expected_subject,
+                              message: expected_message)
+      end
+      let(:expected_message) { 'I can write custom message' }
+
+      it 'adds custom message to email body' do
+        expect(mail.body.encoded).to match(expected_message)
+      end
     end
 
     it 'renders the recipient email' do

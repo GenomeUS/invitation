@@ -12,6 +12,7 @@ pt-BR:
         one: "Não foi possível enviar um convite para %{email}"
         other: "Não foi possível enviar convites para %{email}"
     invite_mailer:
+      custom_message: '%{email} Diz:'
       existing_user:
         subject: "Instruções do convite"
         hello: "Olá %{email}"
