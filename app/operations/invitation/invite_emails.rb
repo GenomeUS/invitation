@@ -5,6 +5,7 @@ module Invitation
     def initialize(invites, opts = {})
       @invites = invites
       @mailer = opts[:mailer] || InviteMailer
+      @subject = opts[:subject]
     end
 
     def send_invites
@@ -20,11 +21,11 @@ module Invitation
     # New users are granted permissions via #after_invite_new_user, currently a null op.
     def do_invite(invite)
       if invite.existing_user?
-        deliver_email(mailer.existing_user(invite))
+        deliver_email(mailer.existing_user(invite, subject: @subject))
         after_invite_existing_user(invite)
         invite.save
       else
-        deliver_email(mailer.new_user(invite))
+        deliver_email(mailer.new_user(invite, subject: @subject))
         after_invite_new_user(invite)
       end
     end
@@ -50,7 +51,6 @@ module Invitation
 
     # Override if you want to do something more complicated for new users.
     # By default we don't do anything extra.
-    def after_invite_new_user(invite)
-    end
+    def after_invite_new_user(invite); end
   end
 end
